@@ -1,0 +1,78 @@
+﻿@page "/"
+@inject HttpClient Http;
+@inject IJSRuntime JSRuntime;
+@inject NavigationManager Navigation;
+
+@using Microsoft.AspNetCore.Components.Forms;
+@using System;
+
+<PageTitle>Index</PageTitle>
+
+<h1>Hello Customer!</h1>
+
+Welcome to Global Finance
+@if (cars == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+            <MudSimpleTable Hover="true" Striped="true" style="overflow-x: auto;">
+                <tbody>
+                    @foreach (var car in cars)
+                    {
+                        counter = counter + 1;
+                        <div class="column">
+                                    <div class="card">
+                                        <div class="card-body">
+                                            <tr>
+                                                <td>Name: @car.Name</td>
+                                                <td>Year: @car.Year.ToShortDateString()</td>
+                                                <td>Kilometers per Litre: @car.Kilo_per_Litre</td>
+                                                <td>Origin: @car.Origin</td>
+                                                <td>Price: @car.Price</td>
+                                            </tr>
+                                            <MudImage Src=@car.Image />
+                                            <MudButton Href="/counter" target="_blank" Variant="Variant.Text">Pay</MudButton>
+                                            <MudButton OnClick="@(e => GoToFinance(car.Name))" target="_blank" Variant="Variant.Text">Finance</MudButton>
+                                        </div>
+                                    </div>
+                        </div>
+                    }
+                    </tbody>
+            </MudSimpleTable>
+}
+@code {
+    private int counter = 0;
+
+    private CarDetails[]? cars;
+
+    protected override async Task OnInitializedAsync()
+    {
+        cars = await Http.GetFromJsonAsync<CarDetails[]>("sample-data/cars.json");
+    }
+
+    public class CarDetails
+    {
+        public int Id { get; set; }
+
+        public string? Name { get; set; }
+
+        public string? Image { get; set; }
+
+        public DateTime Year { get; set; }
+
+        public int Miles_per_Gallon { get; set; }
+
+        public int Kilo_per_Litre => (int)(Miles_per_Gallon / 2.352);
+
+        public string? Origin { get; set; }
+
+        public decimal Price { get; set; }
+    }
+
+    public void GoToFinance(string? car_name)
+    {
+        Navigation.NavigateTo($"Finance/{car_name}");
+    }
+}

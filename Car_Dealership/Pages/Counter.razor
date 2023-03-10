@@ -1,0 +1,45 @@
+﻿@page "/counter"
+
+@using Microsoft.AspNetCore.Components.Forms;
+@inject HttpClient Http;
+@inject IJSRuntime JSRuntime;
+
+<PageTitle>Payment</PageTitle>
+
+<h1>Map</h1>
+
+<div id="map" style="height:500px;width:100%;"></div>
+
+@code {
+    private List<IBrowserFile> loadedFiles = new();
+    private long maxFileSize = 1024 * 15;
+    private int maxAllowedFiles = 1;
+    private bool isloading;
+
+    private void LoadFiles(InputFileChangeEventArgs e)
+    {
+        isloading = true;
+        loadedFiles.Clear();
+
+        foreach (var file in e.GetMultipleFiles(maxAllowedFiles))
+        {
+            try
+            {
+                loadedFiles.Add(file);
+            }
+            catch (Exception ex)
+            {
+            }
+        }
+
+        isloading = false;
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await JSRuntime.InvokeVoidAsync("initMap", null);
+        }
+    }
+}

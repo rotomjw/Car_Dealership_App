@@ -1,0 +1,72 @@
+[
+  {
+    "Id": 1,
+    "Name": "chevrolet chevelle malibu",
+    "Image": "./Car-Images/car_id1.png",
+    "Miles_per_Gallon": 18,
+    "Cylinders": 8,
+    "Displacement": 307,
+    "Horsepower": 130,
+    "Weight_in_lbs": 3504,
+    "Acceleration": 12,
+    "Year": "1970-01-01",
+    "Origin": "USA",
+    "Price": 29500.00
+  },
+  {
+    "Id": 2,
+    "Name": "buick skylark 320",
+    "Image": "./Car-Images/car_id2.png",
+    "Miles_per_Gallon": 15,
+    "Cylinders": 8,
+    "Displacement": 350,
+    "Horsepower": 165,
+    "Weight_in_lbs": 3693,
+    "Acceleration": 11.5,
+    "Year": "1970-01-01",
+    "Origin": "USA",
+    "Price": 22432.00
+  },
+  {
+    "Id": 3,
+    "Name": "plymouth satellite",
+    "Image": "./Car-Images/car_id3.png",
+    "Miles_per_Gallon": 18,
+    "Cylinders": 8,
+    "Displacement": 318,
+    "Horsepower": 150,
+    "Weight_in_lbs": 3436,
+    "Acceleration": 11,
+    "Year": "1970-01-01",
+    "Origin": "USA",
+    "Price": 37311.00
+  },
+  {
+    "Id": 4,
+    "Name": "amc rebel sst",
+    "Image": "./Car-Images/car_id4.png",
+    "Miles_per_Gallon": 16,
+    "Cylinders": 8,
+    "Displacement": 304,
+    "Horsepower": 150,
+    "Weight_in_lbs": 3433,
+    "Acceleration": 12,
+    "Year": "1970-01-01",
+    "Origin": "USA",
+    "Price": 22750.00
+  },
+  {
+    "Id": 5,
+    "Name": "ford torino",
+    "Image": "./Car-Images/car_id5.png",
+    "Miles_per_Gallon": 17,
+    "Cylinders": 8,
+    "Displacement": 302,
+    "Horsepower": 140,
+    "Weight_in_lbs": 3449,
+    "Acceleration": 10.5,
+    "Year": "1970-01-01",
+    "Origin": "USA",
+    "Price": 30663.00
+  }
+]

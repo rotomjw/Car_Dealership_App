@@ -1,0 +1,191 @@
+﻿@page "/finance/{Name?}"
+@using System.Net.Http.Headers;
+@using Microsoft.Extensions.Logging
+@using Microsoft.AspNetCore.Components.Forms;
+
+@inject HttpClient Http;
+@inject ILogger<Finance> Logger
+
+<h3>Finance</h3>
+
+<p>Finance for car: @Name</p>
+
+<form>
+    <label for="fname">First name:</label><br />
+    <input type="text" @bind="@fname" @oninput="@((e) => { fname=(string)e.Value;})" /><br /> <br />
+    <label for="lname">Last name:</label><br />
+    <input type="text" @bind="@lname" @oninput="@((e) => { lname=(string)e.Value;})" /><br /> <br />
+    <label for="email">Email address:</label><br />
+    <input type="text" @bind="@email" @oninput="@((e) => { email=(string)e.Value;})" /><br /> <br />
+    <label for="cardno">Card Number:</label><br />
+    <input type="number" @bind="@cardno" @oninput="@((e) => { cardno=(int)e.Value;})" /><br /> <br />
+    <label for="expiry">Expiry Date:</label><br />
+    <input type="number" @bind="@expiry" @oninput="@((e) => { expiry=(int)e.Value;})" /><br /> <br />
+    <label for="security">Security Number:</label><br />
+    <input type="number" @bind="@security" @oninput="@((e) => { security=(int)e.Value;})" /><br /> <br />
+    <label for="street">Street:</label><br />
+    <input type="text" @bind="@street" @oninput="@((e) => { street=(string)e.Value;})" /><br /> <br />
+    <label for="post">Postcode:</label><br />
+    <input type="text" @bind="@post" @oninput="@((e) => { post=(string)e.Value;})" /><br /> <br />
+    <label for="country">Please select your country: </label> <br />
+    <select name="country" id="country">
+        <option value="UK">UK</option>
+        <option value="USA">USA</option>
+        <option value="France">France</option>
+    </select><br /><br />
+    <button type="submit">Submit details</button><br /> <br />
+</form> <br />
+<p>
+    <label>
+        Upload up to @maxAllowedFiles files (optional):
+        <InputFile OnChange="@OnInputFileChange" multiple />
+    </label>
+</p>
+
+@if (files.Count > 0)
+{
+    <div class="card">
+        <div class="card-body">
+            <ul>
+                @foreach (var file in files)
+                {
+                    <li>
+                        File: @file.Name
+                        <br>
+                        @if (FileUpload(uploadResults, file.Name, Logger,
+                       out var result))
+                        {
+                            <span>
+                                Stored File Name: @result.StoredFileName
+                            </span>
+                        }
+                        else
+                        {
+                            <span>
+                                There was an error uploading the file
+                                (Error: @result.ErrorCode).
+                            </span>
+                        }
+                    </li>
+                }
+            </ul>
+        </div>
+    </div>
+}
+
+@code {
+    [Parameter]
+    public string? Name { get; set; }
+
+    private string fname { get; set; } = "blazor";
+    private string lname { get; set; } = "blazor";
+    private string email { get; set; } = "blazor";
+    private long cardno { get; set; } = 1;
+    private int expiry { get; set; } = 0321;
+    private int security { get; set; } = 111;
+    private string street { get; set; } = "blazor";
+    private string post { get; set; } = "blazor";
+
+    private Details[]? cust_id;
+
+    public class Details {
+        public string? Fname { get; set; }
+        public string? Lname { get; set; }
+        public string? Email { get; set; }
+        public long Cardno { get; set; }
+        public int Expiry { get; set; }
+        public int Security { get; set; }
+        public string? Street { get; set; }
+        public string? Post { get; set; }
+    }
+
+    private List<File> files = new();
+    private List<UploadResult> uploadResults = new();
+    private int maxAllowedFiles = 3;
+    private bool shouldRender;
+
+    protected override bool ShouldRender() => shouldRender;
+
+    private async Task OnInputFileChange(InputFileChangeEventArgs e)
+    {
+        shouldRender = false;
+        long maxFileSize = 1024 * 100;
+        var upload = false;
+
+        using var content = new MultipartFormDataContent();
+
+        foreach (var file in e.GetMultipleFiles(maxAllowedFiles))
+        {
+            if (uploadResults.SingleOrDefault(
+                f => f.FileName == file.Name) is null)
+            {
+                try
+                {
+                    files.Add(new() { Name = file.Name });
+
+                    var fileContent =
+                        new StreamContent(file.OpenReadStream(maxFileSize));
+
+                    fileContent.Headers.ContentType =
+                        new MediaTypeHeaderValue(file.ContentType);
+
+                    content.Add(
+                        content: fileContent,
+                        name: "\"files\"",
+                        fileName: file.Name);
+
+                    upload = true;
+                }
+                catch (Exception ex)
+                {
+                    Logger.LogInformation(
+                        "{FileName} not uploaded (Err: 6): {Message}",
+                        file.Name, ex.Message);
+
+                    uploadResults.Add(
+                        new()
+                            {
+                                FileName = file.Name,
+                                ErrorCode = 6,
+                                Uploaded = false
+                            });
+                }
+            }
+        }
+
+        if (upload)
+        {
+            var response = await Http.PostAsync("/Shared/Filesave", content);
+
+            var newUploadResults = await response.Content.ReadFromJsonAsync<List<UploadResult>>();
+
+            if (newUploadResults is not null)
+            {
+                uploadResults = uploadResults.Concat(newUploadResults).ToList();
+            }
+            
+        }
+
+        shouldRender = true;
+    }
+
+    private static bool FileUpload(IList<UploadResult> uploadResults,
+        string? fileName, ILogger<Finance> logger, out UploadResult result)
+    {
+        result = uploadResults.SingleOrDefault(f => f.FileName == fileName) ?? new();
+
+        if (!result.Uploaded)
+        {
+            logger.LogInformation("{FileName} not uploaded (Err: 5)", fileName);
+            result.ErrorCode = 5;
+        }
+
+        return result.Uploaded;
+    }
+
+    private class File
+    {
+        public string? Name { get; set; }
+    }
+
+}

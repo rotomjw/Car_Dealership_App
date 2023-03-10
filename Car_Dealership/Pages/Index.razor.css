@@ -1,0 +1,11 @@
+﻿MudSimpleTable {
+    border: 1px, solid;
+    width: 100%;
+    text-align: center;
+    padding: 20px;
+}
+
+th {
+    background-color: #FF0000;
+    color: red;
+}

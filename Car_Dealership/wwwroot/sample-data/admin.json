@@ -1,0 +1,28 @@
+[
+  {
+    "Name": "chevrolet chevelle malibu",
+    "Available": 32,
+    "Sold":  15
+  },
+  {
+    "Name": "buick skylark 320",
+    "Available": 47,
+    "Sold": 46
+  },
+  {
+    "Name": "plymouth satellite",
+    "Available": 39,
+    "Sold": 46
+  },
+  {
+    "Name": "amc rebel sst",
+    "Available": 37,
+    "Sold": 38
+  },
+  {
+    "Name": "ford torino",
+    "Available": 32,
+    "Sold": 5
+  }
+]
+
